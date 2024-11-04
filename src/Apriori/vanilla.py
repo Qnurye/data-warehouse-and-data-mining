@@ -6,6 +6,8 @@ def calculate_support(itemset: frozenset, dataset: list[set]) -> float:
     :return: float 支持度
     """
 
+    if len(dataset) == 0:
+        return 0.0
     count = sum(1 for transaction in dataset if itemset.issubset(transaction))
     return count / len(dataset)
 
