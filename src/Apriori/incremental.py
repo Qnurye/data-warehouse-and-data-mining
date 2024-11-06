@@ -1,34 +1,45 @@
+from Apriori import apriori
+
+
 def incremental_update(
-        D: list[set], D_new: list[set],
-        freq_set: dict[frozenset, float], f_new: dict[frozenset, float],
-        min_support: float
+        DB: list[set], db: list[set],
+        FP: dict[frozenset, float],
+        s: float
 ) -> dict[frozenset, float]:
     """
     增量更新频繁项集
-    :param D: 原数据集
-    :param D_new: 新增数据集
-    :param freq_set: 原频繁项集
-    :param f_new: 新增频繁项集
-    :param min_support: 最小支持度
+    :param DB: 原数据集
+    :param db: 新增数据集
+    :param FP: 原频繁项集
+    :param s: 最小支持度
     :return: dict 更新后的频繁项集
     """
 
-    total_size = len(D) + len(D_new)
+    fp = apriori(db, s)  # 新增数据集的频繁项集
+    total_size = len(DB) + len(db)
 
-    # 更新频繁项集
-    updated_freq_set = freq_set.copy()  # 复制原频繁项集
+    # c1 为 FP 和 fp 的键的交集
+    c1 = set(FP.keys()) & set(fp.keys())
+    # c2 = FP - c1
+    c2 = set(FP.keys()) - c1
+    # c3 = fp - c1
+    c3 = set(fp.keys()) - c1
 
-    for itemset in freq_set:
-        updated_freq_set[itemset] = (freq_set[itemset] * len(D)) / total_size
+    for k in c1:
+        FP[k] = (FP[k] * len(DB) + fp[k] * len(db)) / total_size
 
-    for itemset in f_new:
-        if itemset in updated_freq_set:
-            # 如果项集已经存在，累加支持度
-            updated_freq_set[itemset] += (f_new[itemset] * len(D_new)) / total_size
-        else:
-            # 否则直接加入
-            updated_freq_set[itemset] = (f_new[itemset] * len(D_new)) / total_size
+    count = 0
+    for t in db:
+        for k in c2:
+            if k.issubset(t):
+                count += 1
+    FP.update({k: (FP[k] * len(DB) + count) / total_size for k in c2})
 
-    final_freq_set = {itemset: support for itemset, support in updated_freq_set.items() if support >= min_support}
+    count = 0
+    for t in db:
+        for k in c3:
+            if k.issubset(t):
+                count += 1
+    FP.update({k: (fp[k] * len(db)) / total_size for k in c3})
 
-    return final_freq_set
+    return FP

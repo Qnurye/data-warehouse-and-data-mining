@@ -27,11 +27,7 @@ class TestIncrementalUpdate(unittest.TestCase):
     def test_incremental_update(self):
         # 调用函数进行增量更新
         updated_freq_set = incremental_update(
-            D=self.D,
-            D_new=self.D_new,
-            freq_set=self.freq_set,
-            f_new=self.f_new,
-            min_support=self.min_support
+            self.D, self.D_new, self.freq_set, self.min_support
         )
 
         # 期望结果
