@@ -33,6 +33,12 @@ def apriori(dataset: list[set], min_support: float) -> dict[frozenset, float]:
         # 生成候选项集
         candidate_itemsets = {i.union(j) for i in current_itemsets for j in current_itemsets if len(i.union(j)) == k}
 
+        # 减枝
+        for itemset in candidate_itemsets:
+            subsets = [itemset.difference({item}) for item in itemset]
+            if any(subset not in current_itemsets for subset in subsets):
+                candidate_itemsets.remove(itemset)
+
         # 计算候选项集的支持度并筛选出频繁项集
         for itemset in candidate_itemsets:
             support = calculate_support(itemset, dataset)
