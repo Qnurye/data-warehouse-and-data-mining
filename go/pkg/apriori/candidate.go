@@ -29,6 +29,7 @@ func generate(fp patterns) patterns {
 			if canMerge(p1, p2) {
 				c := p1.Union(p2)
 				if isSubPatterns(genSubsets(c), fp) {
+					// fixme: around 40% chance of testing deadlock here
 					patternsAppend(candidates, c)
 				}
 			}
@@ -40,6 +41,13 @@ func generate(fp patterns) patterns {
 func canMerge(p1, p2 pattern) bool {
 	if p1.Cardinality() != p2.Cardinality() {
 		return false
+	}
+	if p1.Cardinality() == 1 {
+		if p1.Intersect(p2).Cardinality() == 0 {
+			return true
+		} else {
+			return false
+		}
 	}
 	return p1.Intersect(p2).Cardinality() == p1.Cardinality()-1
 }

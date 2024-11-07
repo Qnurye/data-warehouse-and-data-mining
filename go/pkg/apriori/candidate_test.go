@@ -110,6 +110,13 @@ func Test_canMerge(t *testing.T) {
 				mapset.NewSet("a", "b"),
 			},
 			false,
+		}, {
+			"single item patterns",
+			args{
+				mapset.NewSet("a"),
+				mapset.NewSet("b"),
+			},
+			true,
 		},
 	}
 	for _, tt := range tests {
@@ -165,6 +172,18 @@ func Test_genSubsets(t *testing.T) {
 				mapset.NewSet("c", "b"),
 			),
 		},
+		{
+			"pattern with four items",
+			args{
+				mapset.NewSet("a", "b", "c", "d"),
+			},
+			mapset.NewSet[pattern](
+				mapset.NewSet("a", "c", "d"),
+				mapset.NewSet("a", "b", "d"),
+				mapset.NewSet("a", "b", "c"),
+				mapset.NewSet("c", "b", "d"),
+			),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -188,7 +207,6 @@ func Test_generate(t *testing.T) {
 			emptyPatterns(),
 		}, emptyPatterns()},
 		{"k = 1", args{
-			// FIXME)) sometimes tests stuck here
 			mapset.NewSet[pattern](
 				mapset.NewSet("a"),
 				mapset.NewSet("b"),
@@ -225,7 +243,7 @@ func Test_generate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := generate(tt.args.fp); !patternsEqual(got, tt.want) {
-				t.Errorf("generate() = %v, want %v", got, tt.want)
+				t.Errorf("%s: generate() = %v, want %v", tt.name, got, tt.want)
 			}
 		})
 	}

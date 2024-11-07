@@ -35,7 +35,7 @@ func comparePatternWithSupports(a, b []patternWithSupport) bool {
 func extract(pws []patternWithSupport) patterns {
 	p := emptyPatterns()
 	for _, pw := range pws {
-		p.Add(pw.pattern)
+		patternsAppend(p, pw.pattern)
 	}
 	return p
 }
@@ -58,6 +58,9 @@ func patternsContain(p patterns, q pattern) bool {
 }
 
 func isSubPatterns(a, b patterns) bool {
+	if a.Cardinality() > b.Cardinality() {
+		return false
+	}
 	for p := range a.Iter() {
 		if !patternsContain(b, p) {
 			return false
