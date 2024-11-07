@@ -19,7 +19,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version-file: go.mod
+          go-version-file: "${{ github.workspace }}/go/go.mod"
 
       - name: Cache Go modules
         uses: actions/cache@v3
@@ -27,9 +27,9 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum')}}
+          key: ${{runner.os}}-go-${{ hashFiles('**/go.sum')}}
           restore-keys: |
-            ${{ runner.os }}-go-
+            ${{runner.os}}-go-
 
       - name: Install dependencies
         run: go mod download
