@@ -1,53 +1,57 @@
 package apriori
 
 import (
-	mapset "github.com/deckarep/golang-set/v2"
+	"data-mining/pkg/base"
 	"testing"
 )
 
 func Test_run(t *testing.T) {
 	type args struct {
-		T []transaction
+		T []base.Transaction
 		s float64
 	}
 	tests := []struct {
 		name string
 		args args
-		want []patternWithSupport
+		want base.PatternsWithSupport
 	}{
 		{"test", args{
-			[]transaction{
-				mapset.NewSet("a", "b", "c"),
-				mapset.NewSet("a", "b"),
+			[]base.Transaction{
+				base.NewTransaction("a", "b", "c"),
+				base.NewTransaction("a", "b"),
 			},
 			0.6,
-		}, []patternWithSupport{
-			{mapset.NewSet("a"), 1},
-			{mapset.NewSet("b"), 1},
-			{mapset.NewSet("a", "b"), 1},
+		}, base.PatternsWithSupport{
+			{base.NewPattern("a"), 1},
+			{base.NewPattern("b"), 1},
+			{base.NewPattern("a", "b"), 1},
 		}},
 		{"test2", args{
-			[]transaction{
-				mapset.NewSet("a", "b", "c"),
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("d", "e"),
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("a", "d", "e"),
-				mapset.NewSet("b", "e"),
+			[]base.Transaction{
+				base.NewTransaction("a", "b", "c"),
+				base.NewTransaction("a", "b"),
+				base.NewTransaction("d", "e"),
+				base.NewTransaction("a", "b"),
+				base.NewTransaction("a", "d", "e"),
+				base.NewTransaction("b", "e"),
 			},
 			0.5,
-		}, []patternWithSupport{
-			{mapset.NewSet("a"), support(4) / support(6)},
-			{mapset.NewSet("b"), support(4) / support(6)},
-			{mapset.NewSet("e"), support(3) / support(6)},
-			{mapset.NewSet("a", "b"), support(3) / support(6)},
+		}, base.PatternsWithSupport{
+			{base.NewPattern("a"), base.Support(4) / base.Support(6)},
+			{base.NewPattern("b"), base.Support(4) / base.Support(6)},
+			{base.NewPattern("e"), base.Support(3) / base.Support(6)},
+			{base.NewPattern("a", "b"), base.Support(3) / base.Support(6)},
 		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := run(tt.args.T, tt.args.s); !comparePatternWithSupports(got, tt.want) {
+			if got := run(tt.args.T, tt.args.s); !got.Equal(tt.want) {
 				t.Errorf("run() = %v (%v), want %v (%v)",
-					extract(got), extractSupport(got), extract(tt.want), extractSupport(tt.want))
+					got.Extract().Set,
+					got.ExtractSupport(),
+					tt.want.Extract().Set,
+					tt.want.ExtractSupport(),
+				)
 			}
 		})
 	}

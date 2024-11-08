@@ -1,194 +1,73 @@
 package apriori
 
 import (
+	"data-mining/pkg/base"
 	"testing"
-
-	mapset "github.com/deckarep/golang-set/v2"
 )
 
 func Test_genL1(t *testing.T) {
 	type args struct {
-		T []transaction
+		T []base.Transaction
 		s float64
 	}
 	tests := []struct {
 		name string
 		args args
-		want patterns
+		want base.Patterns
 	}{
 		{
 			"empty transactions",
 			args{
-				[]transaction{},
+				[]base.Transaction{},
 				0.5,
 			},
-			emptyPatterns(),
+			base.NewPatterns(),
 		},
 		{
 			"{a, b}, {a, c}, 0.6",
 			args{
-				[]transaction{
-					mapset.NewSet("a", "b"),
-					mapset.NewSet("a", "c"),
+				[]base.Transaction{
+					base.NewTransaction("a", "b"),
+					base.NewTransaction("a", "c"),
 				},
 				0.6,
 			},
-			mapset.NewSet[pattern](
-				mapset.NewSet("a"),
+			base.NewPatterns(
+				base.NewPattern("a"),
 			),
 		},
 		{
 			"{a, b, c}, {d, e, f}, 0.6",
 			args{
-				[]transaction{
-					mapset.NewSet("a", "b", "c"),
-					mapset.NewSet("d", "e", "f"),
+				[]base.Transaction{
+					base.NewTransaction("a", "b", "c"),
+					base.NewTransaction("d", "e", "f"),
 				},
 				0.6,
 			},
-			emptyPatterns(),
+			base.NewPatterns(),
 		},
 		{
 			"{a, b, c}, {d, e, f}, {a}, 0.6",
 			args{
-				[]transaction{
-					mapset.NewSet("a", "b", "c"),
-					mapset.NewSet("d", "e", "f"),
-					mapset.NewSet("a"),
+				[]base.Transaction{
+					base.NewTransaction("a", "b", "c"),
+					base.NewTransaction("d", "e", "f"),
+					base.NewTransaction("a"),
 				},
 				0.6,
 			},
-			mapset.NewSet[pattern](
-				mapset.NewSet("a"),
+			base.NewPatterns(
+				base.NewPattern("a"),
 			),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := genL1(tt.args.T, tt.args.s); !patternsEqual(extract(got), tt.want) {
+			got := genL1(tt.args.T, tt.args.s)
+			extract := got.Extract()
+			if !extract.Equal(tt.want) {
 				t.Errorf("genL1() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_canMerge(t *testing.T) {
-	type args struct {
-		p1 pattern
-		p2 pattern
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			"two patterns with different cardinality",
-			args{
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("a", "b", "c"),
-			},
-			false,
-		}, {
-			"two patterns with the same cardinality",
-			args{
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("a", "c"),
-			},
-			true,
-		}, {
-			"two patterns with the same cardinality but no common items",
-			args{
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("c", "d"),
-			},
-			false,
-		}, {
-			"identical patterns",
-			args{
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("a", "b"),
-			},
-			false,
-		}, {
-			"single item patterns",
-			args{
-				mapset.NewSet("a"),
-				mapset.NewSet("b"),
-			},
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := canMerge(tt.args.p1, tt.args.p2); got != tt.want {
-				t.Errorf("canMerge() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_genSubsets(t *testing.T) {
-	type args struct {
-		p pattern
-	}
-	tests := []struct {
-		name string
-		args args
-		want patterns
-	}{
-		{
-			"empty pattern",
-			args{
-				emptyPattern(),
-			},
-			emptyPatterns(),
-		},
-		{
-			"pattern with one item",
-			args{
-				mapset.NewSet("a"),
-			},
-			emptyPatterns(),
-		},
-		{
-			"pattern with two items",
-			args{
-				mapset.NewSet("a", "b"),
-			},
-			mapset.NewSet[pattern](
-				mapset.NewSet("b"),
-				mapset.NewSet("a"),
-			),
-		},
-		{
-			"pattern with three items",
-			args{
-				mapset.NewSet("a", "b", "c"),
-			},
-			mapset.NewSet[pattern](
-				mapset.NewSet("a", "c"),
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("c", "b"),
-			),
-		},
-		{
-			"pattern with four items",
-			args{
-				mapset.NewSet("a", "b", "c", "d"),
-			},
-			mapset.NewSet[pattern](
-				mapset.NewSet("a", "c", "d"),
-				mapset.NewSet("a", "b", "d"),
-				mapset.NewSet("a", "b", "c"),
-				mapset.NewSet("c", "b", "d"),
-			),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := genSubsets(tt.args.p); !patternsEqual(got, tt.want) {
-				t.Errorf("generate() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -196,53 +75,53 @@ func Test_genSubsets(t *testing.T) {
 
 func Test_generate(t *testing.T) {
 	type args struct {
-		fp patterns
+		fp base.Patterns
 	}
 	tests := []struct {
 		name string
 		args args
-		want patterns
+		want base.Patterns
 	}{
-		{"empty patterns", args{
-			emptyPatterns(),
-		}, emptyPatterns()},
+		{"empty Patterns", args{
+			base.NewPatterns(),
+		}, base.NewPatterns()},
 		{"k = 1", args{
-			mapset.NewSet[pattern](
-				mapset.NewSet("a"),
-				mapset.NewSet("b"),
-				mapset.NewSet("c"),
+			base.NewPatterns(
+				base.NewPattern("a"),
+				base.NewPattern("b"),
+				base.NewPattern("c"),
 			),
-		}, mapset.NewSet[pattern](
-			mapset.NewSet("a", "b"),
-			mapset.NewSet("a", "c"),
-			mapset.NewSet("b", "c"),
+		}, base.NewPatterns(
+			base.NewPattern("a", "b"),
+			base.NewPattern("a", "c"),
+			base.NewPattern("b", "c"),
 		)},
 		{"k = 2", args{
-			mapset.NewSet[pattern](
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("a", "c"),
-				mapset.NewSet("b", "c"),
-				mapset.NewSet("b", "d"),
-				mapset.NewSet("c", "d"),
+			base.NewPatterns(
+				base.NewPattern("a", "b"),
+				base.NewPattern("a", "c"),
+				base.NewPattern("b", "c"),
+				base.NewPattern("b", "d"),
+				base.NewPattern("c", "d"),
 			),
-		}, mapset.NewSet[pattern](
-			mapset.NewSet("a", "b", "c"),
-			mapset.NewSet("b", "c", "d"),
+		}, base.NewPatterns(
+			base.NewPattern("a", "b", "c"),
+			base.NewPattern("b", "c", "d"),
 		)},
 		{"another k = 2", args{
-			mapset.NewSet[pattern](
-				mapset.NewSet("a", "b"),
-				mapset.NewSet("a", "c"),
-				mapset.NewSet("b", "c"),
-				mapset.NewSet("b", "d"),
+			base.NewPatterns(
+				base.NewPattern("a", "b"),
+				base.NewPattern("a", "c"),
+				base.NewPattern("b", "c"),
+				base.NewPattern("b", "d"),
 			),
-		}, mapset.NewSet[pattern](
-			mapset.NewSet("a", "b", "c"),
+		}, base.NewPatterns(
+			base.NewPattern("a", "b", "c"),
 		)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := generate(tt.args.fp); !patternsEqual(got, tt.want) {
+			if got := generate(tt.args.fp); !got.Equal(tt.want) {
 				t.Errorf("%s: generate() = %v, want %v", tt.name, got, tt.want)
 			}
 		})

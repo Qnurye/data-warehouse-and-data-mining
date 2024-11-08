@@ -1,11 +1,13 @@
 package apriori
 
-func run(T []transaction, s float64) []patternWithSupport {
-	var r []patternWithSupport
+import "data-mining/pkg/base"
+
+func run(T []base.Transaction, s float64) base.PatternsWithSupport {
+	var r base.PatternsWithSupport
 	l := genL1(T, s)
 	r = append(r, l...)
-	for l != nil {
-		c := generate(extract(l))
+	for len(l) > 0 {
+		c := generate(l.Extract())
 		l = genL(T, s, c)
 		r = append(r, l...)
 	}
