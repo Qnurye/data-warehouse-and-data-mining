@@ -24,12 +24,14 @@ func genL1(T []transaction, s float64) []patternWithSupport {
 
 func generate(fp patterns) patterns {
 	candidates := emptyPatterns()
-	for p1 := range fp.Iter() {
-		for p2 := range fp.Iter() {
+	fps := fp.ToSlice()
+	for i := 0; i < len(fps); i++ {
+		for j := i + 1; j < len(fps); j++ {
+			p1 := fps[i]
+			p2 := fps[j]
 			if canMerge(p1, p2) {
 				c := p1.Union(p2)
 				if isSubPatterns(genSubsets(c), fp) {
-					// fixme: around 40% chance of testing deadlock here
 					patternsAppend(candidates, c)
 				}
 			}

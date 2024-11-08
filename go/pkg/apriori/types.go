@@ -49,7 +49,8 @@ func extractSupport(pws []patternWithSupport) []support {
 }
 
 func patternsContain(p patterns, q pattern) bool {
-	for r := range p.Iter() {
+	ps := p.ToSlice()
+	for _, r := range ps {
 		if r.Equal(q) {
 			return true
 		}
