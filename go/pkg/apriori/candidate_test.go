@@ -5,6 +5,34 @@ import (
 	"testing"
 )
 
+func Benchmark_genL1(b *testing.B) {
+	T := []base.Transaction{
+		base.NewTransaction("a", "b", "c"),
+		base.NewTransaction("d", "e", "f"),
+		base.NewTransaction("a"),
+	}
+	s := 0.6
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		genL1(T, s)
+	}
+}
+
+func Benchmark_generate(b *testing.B) {
+	fp := base.NewPatterns(
+		base.NewPattern("a", "b", "c", "d", "e"),
+		base.NewPattern("a", "b", "c", "d", "f"),
+		base.NewPattern("a", "b", "c", "d", "h"),
+		base.NewPattern("a", "b", "c", "h", "i"),
+		base.NewPattern("a", "b", "c", "h", "j"),
+		base.NewPattern("a", "b", "c", "h", "k"),
+	)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		generate(fp)
+	}
+}
+
 func Test_genL1(t *testing.T) {
 	type args struct {
 		T []base.Transaction

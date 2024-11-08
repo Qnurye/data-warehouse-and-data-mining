@@ -5,6 +5,20 @@ import (
 	"testing"
 )
 
+func BenchmarkRun(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Run([]base.Transaction{
+			base.NewTransaction("a", "b", "c", "d", "e"),
+			base.NewTransaction("a", "b"),
+			base.NewTransaction("d", "e"),
+			base.NewTransaction("a", "b"),
+			base.NewTransaction("a", "d", "e"),
+			base.NewTransaction("a", "b", "c", "d"),
+			base.NewTransaction("a", "b", "c", "d", "e"),
+		}, 0.1)
+	}
+}
+
 func Test_run(t *testing.T) {
 	type args struct {
 		T []base.Transaction

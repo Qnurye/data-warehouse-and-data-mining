@@ -5,6 +5,40 @@ import (
 	"testing"
 )
 
+func Benchmark_genL(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		genL([]base.Transaction{
+			base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+			base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+			base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+			base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+			base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+			base.NewTransaction("a", "b"),
+			base.NewTransaction("a", "b", "d"),
+			base.NewTransaction("a", "b", "c"),
+			base.NewTransaction("a", "b", "c"),
+			base.NewTransaction("a", "b", "c"),
+		}, 0.1, base.NewPatterns(
+			base.NewPattern("a"),
+			base.NewPattern("b"),
+			base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+		))
+	}
+}
+
+func Benchmark_genSubsets(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		GenSubsets(base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"))
+	}
+}
+
+func Benchmark_canMerge(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		CanMerge(base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+			base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"))
+	}
+}
+
 func Test_canMerge(t *testing.T) {
 	type args struct {
 		p1 base.Pattern

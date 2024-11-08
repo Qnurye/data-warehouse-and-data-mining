@@ -26,4 +26,4 @@ go.work.sum
 .env
 
 # teacher provided example data
-retail.dat
+retail*.dat

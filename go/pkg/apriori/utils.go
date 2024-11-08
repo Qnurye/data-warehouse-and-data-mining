@@ -1,6 +1,10 @@
 package apriori
 
-import "data-mining/pkg/base"
+import (
+	"data-mining/pkg/base"
+	"runtime"
+	"sync"
+)
 
 func count(T []base.Transaction, c base.Pattern) int {
 	count := 0
@@ -15,12 +19,47 @@ func count(T []base.Transaction, c base.Pattern) int {
 func genL(T []base.Transaction, s float64, C base.Patterns) base.PatternsWithSupport {
 	var l = base.NewPatternsWithSupport()
 	total := float64(len(T))
-	for c := range C.Iter() {
-		count := float64(count(T, c))
-		if count/total >= s {
-			l = l.Add(base.PatternWithSupport{Pattern: c, Support: base.Support(count / total)})
-		}
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	numWorkers := runtime.NumCPU()
+	candidates := make(chan base.Pattern)
+	results := make(chan base.PatternWithSupport)
+
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for c := range candidates {
+				cnt := float64(count(T, c))
+				support := cnt / total
+				if support >= s {
+					results <- base.PatternWithSupport{
+						Pattern: c,
+						Support: base.Support(support),
+					}
+				}
+			}
+		}()
 	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	go func() {
+		for c := range C.Iter() {
+			candidates <- c
+		}
+		close(candidates)
+	}()
+
+	for pw := range results {
+		mu.Lock()
+		l = l.Add(pw)
+		mu.Unlock()
+	}
+
 	return l
 }
 
