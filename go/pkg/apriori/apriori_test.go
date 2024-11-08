@@ -45,8 +45,8 @@ func Test_run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := run(tt.args.T, tt.args.s); !got.Equal(tt.want) {
-				t.Errorf("run() = %v (%v), want %v (%v)",
+			if got := Run(tt.args.T, tt.args.s); !got.Equal(tt.want) {
+				t.Errorf("Run() = %v (%v), want %v (%v)",
 					got.Extract().Set,
 					got.ExtractSupport(),
 					tt.want.Extract().Set,
