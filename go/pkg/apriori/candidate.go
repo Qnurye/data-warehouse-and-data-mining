@@ -2,7 +2,6 @@ package apriori
 
 import (
 	"data-mining/pkg/base"
-	"fmt"
 	"runtime"
 	"sync"
 )
@@ -70,6 +69,6 @@ func generate(fp base.Patterns) base.Patterns {
 		candidates.Add(c)
 	}
 
-	fmt.Printf("Total candidates generated: %d\n", candidates.Cardinality())
+	//fmt.Printf("Total candidates generated: %d\n", candidates.Cardinality())
 	return candidates
 }
