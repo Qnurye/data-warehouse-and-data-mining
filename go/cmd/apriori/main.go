@@ -12,7 +12,7 @@ func main() {
 	start := time.Now()
 
 	path := flag.String("p", "retail.dat", "path to the transactions file")
-	minSupport := flag.Float64("s", 0.5, "minimum support")
+	minSupport := flag.Float64("s", 0.01, "minimum support")
 	flag.Parse()
 
 	transactions, err := data.LoadTransactions(*path)

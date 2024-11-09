@@ -18,6 +18,10 @@ func count(T []base.Transaction, c base.Pattern) int {
 
 func genL(T []base.Transaction, s float64, C base.Patterns) base.PatternsWithSupport {
 	var l = base.NewPatternsWithSupport()
+	if C.Cardinality() == 0 {
+		return l
+	}
+
 	total := float64(len(T))
 	var mu sync.Mutex
 	var wg sync.WaitGroup

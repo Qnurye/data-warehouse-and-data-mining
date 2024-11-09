@@ -18,6 +18,10 @@ func (ps Patterns) String() string {
 	return s
 }
 
+func (ps Patterns) Cardinality() int {
+	return ps.Set.Cardinality()
+}
+
 func NewPatterns(p ...Pattern) Patterns {
 	s := mapset.NewSet[Pattern]()
 	for _, i := range p {
