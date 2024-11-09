@@ -2,22 +2,23 @@ package apriori
 
 import (
 	"data-mining/pkg/base"
+	"fmt"
 	"runtime"
 	"sync"
 )
 
-func genL1(T []base.Transaction, s float64) base.PatternsWithSupport {
-	var l1 []base.PatternWithSupport
+func genL1(T []base.Transaction, s base.Support) base.PatternsWithSupport {
+	l1 := base.NewPatternsWithSupport()
 	itemCount := make(map[string]int)
-	length := float64(len(T))
+	length := base.Support(len(T))
 	for _, t := range T {
 		for i := range t.Iter() {
 			itemCount[i]++
 		}
 	}
 	for i, c := range itemCount {
-		if float64(c)/length >= s {
-			l1 = append(l1, base.PatternWithSupport{
+		if base.Support(c)/length >= s {
+			l1.Append(base.PatternWithSupport{
 				Pattern: base.NewPattern(i),
 				Support: base.Support(float64(c) / float64(len(T))),
 			})
@@ -69,5 +70,6 @@ func generate(fp base.Patterns) base.Patterns {
 		candidates.Add(c)
 	}
 
+	fmt.Printf("Total candidates generated: %d\n", candidates.Cardinality())
 	return candidates
 }

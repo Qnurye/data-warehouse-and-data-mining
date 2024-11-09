@@ -10,6 +10,14 @@ func NewPattern(vals ...string) Pattern {
 	return Pattern{mapset.NewSet[string](vals...)}
 }
 
+func (p Pattern) Equal(p2 Pattern) bool {
+	return p.Set.Equal(p2.Set)
+}
+
+func (p Pattern) ToSlice() []string {
+	return p.Set.ToSlice()
+}
+
 func (p Pattern) String() string {
 	return p.Set.String()
 }
@@ -43,7 +51,12 @@ func (p Pattern) Union(p2 Pattern) Pattern {
 }
 
 func (p Pattern) IsSubset(t Transaction) bool {
-	for i := range p.Iter() {
+	if p.Cardinality() > t.Cardinality() {
+		return false
+	}
+
+	ps := p.ToSlice()
+	for _, i := range ps {
 		if !t.Contains(i) {
 			return false
 		}

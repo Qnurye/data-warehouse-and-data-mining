@@ -17,3 +17,7 @@ func NewTransaction(items ...string) Transaction {
 func (t Transaction) Contains(item string) bool {
 	return t.Set.Contains(item)
 }
+
+func (t Transaction) Cardinality() int {
+	return t.Set.Cardinality()
+}

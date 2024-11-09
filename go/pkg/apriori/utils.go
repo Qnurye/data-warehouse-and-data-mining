@@ -2,68 +2,36 @@ package apriori
 
 import (
 	"data-mining/pkg/base"
-	"runtime"
-	"sync"
 )
 
-func count(T []base.Transaction, c base.Pattern) int {
-	count := 0
+func count(T []base.Transaction, c base.Patterns) base.PatternsWithSupport {
+	result := base.WithSupport(c)
 	for _, t := range T {
-		if c.IsSubset(t) {
-			count++
+		for _, p := range c.ToSlice() {
+			if p.IsSubset(t) {
+				result[p]++
+			}
 		}
 	}
-	return count
+
+	for p, sp := range result {
+		result[p] = sp / base.Support(len(T))
+	}
+	return result
 }
 
-func genL(T []base.Transaction, s float64, C base.Patterns) base.PatternsWithSupport {
+func genL(T []base.Transaction, s base.Support, C base.Patterns) base.PatternsWithSupport {
 	var l = base.NewPatternsWithSupport()
 	if C.Cardinality() == 0 {
 		return l
 	}
 
-	total := float64(len(T))
-	var mu sync.Mutex
-	var wg sync.WaitGroup
-	numWorkers := runtime.NumCPU()
-	candidates := make(chan base.Pattern)
-	results := make(chan base.PatternWithSupport)
-
-	for i := 0; i < numWorkers; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for c := range candidates {
-				cnt := float64(count(T, c))
-				support := cnt / total
-				if support >= s {
-					results <- base.PatternWithSupport{
-						Pattern: c,
-						Support: base.Support(support),
-					}
-				}
-			}
-		}()
-	}
-
-	go func() {
-		wg.Wait()
-		close(results)
-	}()
-
-	go func() {
-		for c := range C.Iter() {
-			candidates <- c
+	result := count(T, C)
+	for pt, sp := range result {
+		if sp >= s {
+			l.Append(base.PatternWithSupport{Pattern: pt, Support: sp})
 		}
-		close(candidates)
-	}()
-
-	for pw := range results {
-		mu.Lock()
-		l = l.Add(pw)
-		mu.Unlock()
 	}
-
 	return l
 }
 
@@ -86,10 +54,13 @@ func GenSubsets(p base.Pattern) base.Patterns {
 	if p.IsEmpty() || p.Cardinality() == 1 {
 		return subsets
 	}
-	for i := range p.Iter() {
+
+	ps := p.ToSlice()
+	for _, i := range ps {
 		s := p.Clone()
 		s.Remove(i)
 		subsets.Add(s)
 	}
+
 	return subsets
 }

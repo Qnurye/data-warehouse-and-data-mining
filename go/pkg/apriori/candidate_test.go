@@ -8,10 +8,10 @@ import (
 func Benchmark_genL1(b *testing.B) {
 	T := []base.Transaction{
 		base.NewTransaction("a", "b", "c"),
-		base.NewTransaction("d", "e", "f"),
-		base.NewTransaction("a"),
+		base.NewTransaction("a", "c", "d"),
+		base.NewTransaction("b", "c", "e"),
 	}
-	s := 0.6
+	s := base.Support(0.5)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		genL1(T, s)
@@ -36,7 +36,7 @@ func Benchmark_generate(b *testing.B) {
 func Test_genL1(t *testing.T) {
 	type args struct {
 		T []base.Transaction
-		s float64
+		s base.Support
 	}
 	tests := []struct {
 		name string

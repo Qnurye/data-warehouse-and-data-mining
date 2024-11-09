@@ -27,15 +27,34 @@ func Benchmark_genL(b *testing.B) {
 }
 
 func Benchmark_genSubsets(b *testing.B) {
+	p := base.NewPattern("a", "b", "c", "d", "e", "f")
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		GenSubsets(base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"))
+		GenSubsets(p)
 	}
 }
 
-func Benchmark_canMerge(b *testing.B) {
+func Benchmark_count(b *testing.B) {
+	t := []base.Transaction{
+		base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+		base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+		base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+		base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+		base.NewTransaction("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+		base.NewTransaction("a", "b"),
+		base.NewTransaction("a", "b", "d"),
+		base.NewTransaction("a", "b", "c"),
+		base.NewTransaction("a", "b", "c"),
+		base.NewTransaction("a", "b", "c"),
+	}
+	p := base.NewPatterns(
+		base.NewPattern("a"),
+		base.NewPattern("b"),
+		base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+	)
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		CanMerge(base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
-			base.NewPattern("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"))
+		count(t, p)
 	}
 }
 
