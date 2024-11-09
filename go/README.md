@@ -1,3 +1,4 @@
+English | [简体中文](README.zh_hans.md)
 
 # Association Rule Mining Algorithms in Go
 

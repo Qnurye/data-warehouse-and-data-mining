@@ -1,3 +1,5 @@
+[English](README.md) | 简体中文
+
 # 关联规则挖掘算法 Go 实现
 
 ## FP-Growth
