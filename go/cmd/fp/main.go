@@ -34,4 +34,5 @@ func main() {
 	}
 
 	fmt.Printf("Execution time: %v\n", time.Since(start))
+	fmt.Printf("Number of FP: %d\n", len(frequentPatterns))
 }

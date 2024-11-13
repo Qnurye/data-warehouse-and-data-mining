@@ -6,7 +6,7 @@ English | [简体中文](README.zh_hans.md)
 
 - `src/`: Source code
 - `notes/`: Jupyter Notebooks
-- [go/](go/README.md): Data mining algorithms implemented in Go
+- [`go/`](go/README.md): Data mining algorithms implemented in Go
 
 ## Quick Start
 

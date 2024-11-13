@@ -6,7 +6,7 @@
 
 - `src/`：源代码
 - `notes/`: Jupyter Notebooks
-- [go/](go/README.zh-hans.md): 数据挖掘算法的 Go 语言实现
+- [`go/`](go/README.zh-hans.md): 数据挖掘算法的 Go 语言实现
 
 ## 快速开始
 
