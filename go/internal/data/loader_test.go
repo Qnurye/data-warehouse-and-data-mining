@@ -1,27 +1,25 @@
 package data
 
 import (
-	"data-mining/pkg/base"
-	mapset "github.com/deckarep/golang-set/v2"
 	"os"
 	"reflect"
 	"testing"
 )
 
-func Test_loadTransactions(t *testing.T) {
+func Test_loadTransactionsAsString(t *testing.T) {
 	tests := []struct {
 		name        string
 		fileContent string
-		want        []base.Transaction
+		want        [][]string
 		wantErr     bool
 	}{
 		{
 			name:        "Test LoadTransactions",
 			fileContent: "19 41 48 16430\n39 41 9150 10542\n48 592 766 8685 9925",
-			want: []base.Transaction{
-				{Set: mapset.NewSet("19", "41", "48", "16430")},
-				{Set: mapset.NewSet("39", "41", "9150", "10542")},
-				{Set: mapset.NewSet("48", "592", "766", "8685", "9925")},
+			want: [][]string{
+				{"19", "41", "48", "16430"},
+				{"39", "41", "9150", "10542"},
+				{"48", "592", "766", "8685", "9925"},
 			},
 			wantErr: false,
 		},
@@ -40,7 +38,7 @@ func Test_loadTransactions(t *testing.T) {
 			if err != nil {
 				t.Errorf("Error closing file: %v", err)
 			}
-			got, err := LoadTransactions("test.txt")
+			got, err := LoadTransactionsAsString("test.txt")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("LoadTransactions() error = %v, wantErr %v", err, tt.wantErr)
 				return
