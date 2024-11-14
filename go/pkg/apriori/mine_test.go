@@ -5,6 +5,27 @@ import (
 	"testing"
 )
 
+func BenchmarkMine(b *testing.B) {
+	transaction := Transaction{
+		items: []string{"a", "b", "c"},
+		next: &Transaction{
+			items: []string{"a", "b"},
+			next: &Transaction{
+				items: []string{"a", "c"},
+				next: &Transaction{
+					items: []string{"a"},
+					next:  &Transaction{},
+				},
+			},
+		},
+	}
+	minSupport := 2
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Mine(transaction, minSupport, false)
+	}
+}
+
 func TestMine(t *testing.T) {
 	type args struct {
 		transaction Transaction
@@ -44,7 +65,7 @@ func TestMine(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Mine(tt.args.transaction, tt.args.minSupport); !reflect.DeepEqual(got, tt.want) {
+			if got := Mine(tt.args.transaction, tt.args.minSupport, false); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Mine() = %v, want %v", got, tt.want)
 			}
 		})

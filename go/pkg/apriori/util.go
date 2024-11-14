@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// merge merges two maps of patterns and their support counts.
 func merge(a map[string]int, b map[string]int) map[string]int {
 	for pattern, support := range b {
 		a[pattern] = support
@@ -24,10 +25,20 @@ func contains(transaction []string, pattern []string) bool {
 	return j == len(pattern)
 }
 
-func joinPattern(pattern []string) string {
+func join(pattern []string) string {
 	return strings.Join(pattern, ",")
 }
 
-func splitPattern(pattern string) []string {
+func split(pattern string) []string {
 	return strings.Split(pattern, ",")
+}
+
+// canMerge returns true if the two patterns can be merged.
+func canMerge(p1, p2 []string) bool {
+	for i := 0; i < len(p1)-1; i++ {
+		if p1[i] != p2[i] {
+			return false
+		}
+	}
+	return p1[len(p1)-1] < p2[len(p2)-1]
 }

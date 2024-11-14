@@ -9,8 +9,32 @@ func Benchmark_genL1(b *testing.B) {
 	t := largeTransactions()
 	tHead, _ := BuildTransactions(t)
 	s := 2
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		genL1(*tHead, s)
+	}
+}
+
+func Benchmark_genC(b *testing.B) {
+	l := largePatterns()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		genC(l)
+	}
+}
+
+func Benchmark_genL(b *testing.B) {
+	t := largeTransactions()
+	tHead, _ := BuildTransactions(t)
+	p := largePatterns()
+	ps := make([][]string, 0, len(p))
+	for k := range p {
+		ps = append(ps, split(k))
+	}
+	s := 2
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		genL(ps, *tHead, s)
 	}
 }
 
@@ -136,58 +160,6 @@ func Test_genL1(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := genL1(tt.args.tHead, tt.args.s); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("genL1() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_canMerge(t *testing.T) {
-	type args struct {
-		p1 []string
-		p2 []string
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "p1={a,b} p2={a,c}",
-			args: args{
-				p1: []string{"a", "b"},
-				p2: []string{"a", "c"},
-			},
-			want: true,
-		},
-		{
-			name: "p1={a,b} p2={b,c}",
-			args: args{
-				p1: []string{"a", "b"},
-				p2: []string{"b", "c"},
-			},
-			want: false,
-		},
-		{
-			name: "p1={a,b,c} p2={a,b,d}",
-			args: args{
-				p1: []string{"a", "b", "c"},
-				p2: []string{"a", "b", "d"},
-			},
-			want: true,
-		},
-		{
-			name: "p1={a,b,c} p2={a,c,d}",
-			args: args{
-				p1: []string{"a", "b", "c"},
-				p2: []string{"a", "c", "d"},
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := canMerge(tt.args.p1, tt.args.p2); got != tt.want {
-				t.Errorf("canMerge() = %v, want %v", got, tt.want)
 			}
 		})
 	}

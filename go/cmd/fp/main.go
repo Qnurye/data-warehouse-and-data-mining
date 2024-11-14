@@ -5,6 +5,7 @@ import (
 	"data-mining/pkg/fp"
 	"flag"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -23,16 +24,17 @@ func main() {
 
 	if *minCount == 0 {
 		*minCount = int(float64(len(transactions)) * *minSupport)
+		log.Printf("Min count: %d\n", *minCount)
 	}
 
 	fpTree, headerTable := fp.BuildTree(transactions, *minCount)
 	frequentPatterns := fp.MinePatterns(fpTree, headerTable, *minCount)
 
-	fmt.Println("Frequent Patterns:")
+	log.Println("Frequent Patterns:")
 	for pattern, support := range frequentPatterns {
-		fmt.Printf("Pattern: %v, Support: %d\n", pattern, support)
+		fmt.Printf("{%v}: %d\n", pattern, support)
 	}
 
-	fmt.Printf("Execution time: %v\n", time.Since(start))
-	fmt.Printf("Number of FP: %d\n", len(frequentPatterns))
+	log.Printf("Execution time: %v\n", time.Since(start))
+	log.Printf("Number of FP: %d\n", len(frequentPatterns))
 }

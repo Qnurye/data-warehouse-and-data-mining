@@ -5,6 +5,7 @@ import (
 	"data-mining/pkg/apriori"
 	"flag"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -23,18 +24,18 @@ func main() {
 
 	if *minCount == 0 {
 		*minCount = int(float64(len(transactions)) * *minSupport)
-		fmt.Printf("Min count: %d\n", *minCount)
+		log.Printf("Min count: %d\n", *minCount)
 	}
 
 	tHead, cnt := apriori.BuildTransactions(transactions)
-	fmt.Printf("Number of transactions: %d\n", cnt)
-	frequentPatterns := apriori.Mine(*tHead, *minCount)
+	log.Printf("Number of transactions: %d\n", cnt)
+	frequentPatterns := apriori.Mine(*tHead, *minCount, true)
 
-	fmt.Println("Frequent Patterns:")
+	log.Println("Frequent Patterns:")
 	for pattern, support := range frequentPatterns {
-		fmt.Printf("Pattern: %v, Support: %d\n", pattern, support)
+		fmt.Printf("{%v}: %d\n", pattern, support)
 	}
 
-	fmt.Printf("Execution time: %v\n", time.Since(start))
-	fmt.Printf("Number of FP: %d\n", len(frequentPatterns))
+	log.Printf("Execution time: %v\n", time.Since(start))
+	log.Printf("Number of FP: %d\n", len(frequentPatterns))
 }

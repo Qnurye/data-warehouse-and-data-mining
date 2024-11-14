@@ -7,14 +7,6 @@ type Transaction struct {
 	next  *Transaction
 }
 
-func (t *Transaction) Items() []string {
-	return t.items
-}
-
-func (t *Transaction) Next() *Transaction {
-	return t.next
-}
-
 func (t *Transaction) isNil() bool {
 	return t.items == nil && t.next == nil
 }
@@ -33,9 +25,9 @@ func BuildTransactions(transactions [][]string) (*Transaction, int) {
 	current := root
 
 	for _, items := range transactions {
-		if len(items) == 0 {
-			continue
-		}
+		//if len(items) == 0 {
+		//	continue
+		//}
 
 		current.items = sortItems(items)
 		current.next = &Transaction{}

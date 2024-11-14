@@ -1,15 +1,24 @@
 package apriori
 
-import "fmt"
+import (
+	"log"
+)
 
-func Mine(transaction Transaction, minSupport int) map[string]int {
+func Mine(transaction Transaction, minSupport int, logging bool) map[string]int {
 	L := genL1(transaction, minSupport)
-	fmt.Printf("Generating L1\n")
+	if logging {
+		log.Printf("Generating L1\n")
+	}
 	result := L
 	k := 2
 	for len(L) > 0 {
-		fmt.Printf("Generating L%d\n", k)
+		if logging {
+			log.Printf("Generating C%d\n", k)
+		}
 		C := genC(L)
+		if logging {
+			log.Printf("Generating L%d\n", k)
+		}
 		L = genL(C, transaction, minSupport)
 		result = merge(result, L)
 		k++

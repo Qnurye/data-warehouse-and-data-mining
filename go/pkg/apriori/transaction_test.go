@@ -106,7 +106,7 @@ func Test_sortItems(t *testing.T) {
 }
 
 func randomStrings(l int) []string {
-	strDict := "abcdefghijklmnopqrstuvwxyz0123456789"
+	strDict := "abcdef"
 	var s []string
 	for i := 0; i < l; i++ {
 		s = append(s, string(strDict[rand.Int()%len(strDict)]))
@@ -120,4 +120,20 @@ func largeTransactions() [][]string {
 		t = append(t, randomStrings(3))
 	}
 	return t
+}
+
+func largePatterns() map[string]int {
+	p := make(map[string]int)
+	for i := 0; i < 50; i++ {
+		p[join(randomStrings(3))] = rand.Int() % 100
+	}
+	return p
+}
+
+func randomMap(l int) map[string]int {
+	m := make(map[string]int)
+	for i := 0; i < l; i++ {
+		m[join(randomStrings(3))] = rand.Int() % 100
+	}
+	return m
 }
