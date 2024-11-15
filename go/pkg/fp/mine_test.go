@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestMinePatterns(t *testing.T) {
+func TestMine(t *testing.T) {
 	tests := []struct {
 		name             string
 		transactions     [][]string
@@ -68,8 +68,8 @@ func TestMinePatterns(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tree, _ := BuildTree(tt.transactions, tt.minSupport)
-			patterns := MinePatterns(tree, tree.headerTable, tt.minSupport)
+			_, headerTable := BuildTree(tt.transactions, tt.minSupport)
+			patterns := Mine(headerTable, tt.minSupport)
 			if !reflect.DeepEqual(patterns, tt.expectedPatterns) {
 				t.Errorf("Expected patterns %v, got %v", tt.expectedPatterns, patterns)
 			}

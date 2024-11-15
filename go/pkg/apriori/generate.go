@@ -2,7 +2,7 @@ package apriori
 
 import "sort"
 
-// genL1 generates the single itemsets from the transactions.
+// genL1 从事务中生成频繁 1 项集
 func genL1(tHead Transaction, s int) map[string]int {
 	l1 := make(map[string]int)
 	for !tHead.isNil() {
@@ -21,7 +21,7 @@ func genL1(tHead Transaction, s int) map[string]int {
 	return l1
 }
 
-// genL generates the frequent itemsets from the transactions.
+// genL 从候选项集中生成频繁项集
 func genL(c [][]string, tHead Transaction, s int) map[string]int {
 	l := make(map[string]int)
 	for !tHead.isNil() {
@@ -57,7 +57,7 @@ func genSubPatterns(p []string) [][]string {
 	return subPatterns
 }
 
-// genC generates the candidate itemsets from the frequent itemsets.
+// genC 生成候选项集
 func genC(l map[string]int) [][]string {
 	var c [][]string
 	mapList := make([]string, 0, len(l))

@@ -11,7 +11,7 @@ func (t *Transaction) isNil() bool {
 	return t.items == nil && t.next == nil
 }
 
-// sortItems sorts the items in the transaction in lexicographical order.
+// sortItems 依据字典序对事务进行排序
 func sortItems(items []string) []string {
 	sortedItems := make([]string, len(items))
 	copy(sortedItems, items)
@@ -19,7 +19,7 @@ func sortItems(items []string) []string {
 	return sortedItems
 }
 
-// BuildTransactions builds a linked list of transactions from a list of transactions.
+// BuildTransactions 构建事务链表
 func BuildTransactions(transactions [][]string) (*Transaction, int) {
 	root := &Transaction{}
 	current := root

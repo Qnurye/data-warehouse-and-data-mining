@@ -27,8 +27,8 @@ func main() {
 		log.Printf("Min count: %d\n", *minCount)
 	}
 
-	fpTree, headerTable := fp.BuildTree(transactions, *minCount)
-	frequentPatterns := fp.MinePatterns(fpTree, headerTable, *minCount)
+	_, headerTable := fp.BuildTree(transactions, *minCount)
+	frequentPatterns := fp.Mine(headerTable, *minCount)
 
 	log.Println("Frequent Patterns:")
 	for pattern, support := range frequentPatterns {
