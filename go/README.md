@@ -31,5 +31,9 @@ go build -o build/apriori ./cmd/apriori/main.go
 ```
 
 `apriori` command-line arguments:
-- `-s`: Support threshold, default is `0.01`
+- `-h`: Displays help information
+- `-s`: Minimum support ratio, default is `0.01`
+- `-c`: Minimum count for support
 - `-p`: Path to the dataset file, default is `retail.dat`
+
+`-s` takes precedence over `-c`. If both are set, only `-s` is used.
